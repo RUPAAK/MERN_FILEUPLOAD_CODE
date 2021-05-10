@@ -33,13 +33,19 @@ app.get('/get', async (req, res) => {
     res.send(data)
 })
 
-app.post('/post', upload.single('photo'), async (req, res) => {
-    const photoUrl= `http://localhost:8000/photos/${req.file.filename}`;
-    const item= new Database({photo: photoUrl})
+app.post('/post', upload.array('photo'), async (req, res) => {
+    // const photoUrl= `http://localhost:8000/photos/${req.file.filename}`;
+    let photo=[]
+    photo= req.files.map(file=>{
+        return {img: `http://localhost:8000/photos/${file.filename}`}
+    })
+    const item= new Database({photo})
     const saved= await item.save();
     res.json({data: saved})
     console.log(saved)
+
 })
+
 
 //database
 mongoose.connect("mongodb://localhost:27017/photodb", {
